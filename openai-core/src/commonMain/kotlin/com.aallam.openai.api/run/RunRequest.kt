@@ -52,7 +52,22 @@ public data class RunRequest(
     /**
      * Enables streaming events for this run. Will be overridden based on the api call being made.
      */
-    @SerialName("stream") val stream: Boolean = false
+    @SerialName("stream") val stream: Boolean = false,
+
+    /**
+     * What sampling temperature to use, between 0 and 2.
+     * Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
+     */
+    @SerialName("temperature") val samplingTemperatures: SamplingTemperature? = null,
+
+    /**
+     * An alternative to sampling with temperature, called nucleus sampling, where the model considers
+     * the results of the tokens with top_p probability mass.
+     * So 0.1 means only the tokens comprising the top 10% probability mass are considered.
+     *
+     * We generally recommend altering this or temperature but not both.
+     */
+    @SerialName("top_p") val nucleusTemperature: Float? = null
 )
 
 /**
@@ -105,6 +120,11 @@ public class RunRequestBuilder {
     public var metadata: Map<String, String>? = null
 
     /**
+     * Configure the temperature for the run.
+     */
+    public var temperature: TemperatureParam? = null
+
+    /**
      * Build a [RunRequest] instance.
      */
     public fun build(): RunRequest = RunRequest(
@@ -114,5 +134,7 @@ public class RunRequestBuilder {
         additionalInstructions = additionalInstructions,
         tools = tools,
         metadata = metadata,
+        samplingTemperatures = temperature as? SamplingTemperature,
+        nucleusTemperature = (temperature as? NucleusSamplingTemperature)?.let { (it.percent / 100f) }
     )
 }

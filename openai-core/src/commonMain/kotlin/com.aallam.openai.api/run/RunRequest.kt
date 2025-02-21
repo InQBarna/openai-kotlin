@@ -67,7 +67,13 @@ public data class RunRequest(
      *
      * We generally recommend altering this or temperature but not both.
      */
-    @SerialName("top_p") val nucleusTemperature: Float? = null
+    @SerialName("top_p") val nucleusTemperature: Float? = null,
+
+    /**
+     * Controls for how a thread will be truncated prior to the run. Use this to control the initial context window of the run.
+     */
+    @SerialName("truncation_strategy")
+    public val truncationStrategy: TruncationStrategy? = null
 )
 
 /**
@@ -125,6 +131,11 @@ public class RunRequestBuilder {
     public var temperature: TemperatureParam? = null
 
     /**
+     * Controls for how a thread will be truncated prior to the run. Use this to control the initial context window of the run.
+     */
+    public var truncationStrategy: TruncationStrategy? = null
+
+    /**
      * Build a [RunRequest] instance.
      */
     public fun build(): RunRequest = RunRequest(
@@ -135,6 +146,7 @@ public class RunRequestBuilder {
         tools = tools,
         metadata = metadata,
         samplingTemperatures = temperature as? SamplingTemperature,
-        nucleusTemperature = (temperature as? NucleusSamplingTemperature)?.let { (it.percent / 100f) }
+        nucleusTemperature = (temperature as? NucleusSamplingTemperature)?.let { (it.percent / 100f) },
+        truncationStrategy = truncationStrategy
     )
 }
